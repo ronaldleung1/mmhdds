@@ -1,15 +1,15 @@
 from pymavlink import mavutil
 from dronekit import *
-import cv2
+import cv2 # OpenCV
 import numpy as np
 from simple_pid import PID
 
-
+# constants
 ################################################################################################
 follow_dist = .3
 vx, yaw_rate = .6, 0
 target_alt = 1
-lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
+lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255]) # probably related to RGB values
 ################################################################################################
 
 
@@ -19,8 +19,8 @@ def connect_drone(port, wait_ready=True, baud_rate=57600):
     return vehicle
 
 
-def arm_drone():
-    print("Basic pre-arm checks")
+def arm_drone(): # starting the drone up
+    print("Basic pre-arm checks") 
     while not vehicle.is_armable:
         print(" Waiting for vehicle to initialise...")
         time.sleep(1)
@@ -110,7 +110,7 @@ def process_frame(frame, lower, upper):
 
 #############################################################################################################################
 vehicle = connect('/dev/ttyAMA0', wait_ready=True, baud=57600)
-arm_drone()
+arm_drone() # starting the drone up
 time.sleep(2)
 drone_takeoff(target_alt)
 time.sleep(1)
@@ -128,16 +128,17 @@ while True:
     ret, img = cap.read()
     if ret:
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
-        cv2.imshow('Video Stream', original)
-        if detection and rho>follow_dist:
+        cv2.imshow('Video Stream', original) # display image stream in a window
+        if detection and rho>follow_dist: # move the drone closer 
             move_drone(vx, beta, 0)
             yaw_track(beta, yaw_rate)
-        elif detection and rho<=follow_dist:
+        elif detection and rho<=follow_dist: # don't move the drone if it's too close
             move_drone(0, beta, 0)
             yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
     
     key = cv2.waitKey(1) & 0xFF
+    # exits program when "q" is pressed
     if key == ord("q"):
         break
 
