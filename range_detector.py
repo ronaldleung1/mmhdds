@@ -6,7 +6,7 @@
 # (python) range_detector.py --filter RGB --image /path/to/image.png
 # or
 # (python) range_detector.py --filter HSV --webcam
-# (remeber to change directpry first) python3 range_detector.py --filter HSV --webcam
+# (remember to change directory first) python3 range_detector.py --filter HSV --webcam
 
 import cv2
 import argparse
@@ -16,7 +16,7 @@ from operator import xor
 def stackImages(scale, imgArray):
     rows = len(imgArray)
     cols = len(imgArray[0])
-    rowsAvailable = isinstance(imgArray[0], list)
+    rowsAvailable = isinstance(imgArray[0], list) # makes sure that the image actually exists!
     width = imgArray[0][0].shape[1]
     height = imgArray[0][0].shape[0]
     if rowsAvailable:
@@ -26,6 +26,7 @@ def stackImages(scale, imgArray):
                     imgArray[x][y] = cv2.resize(imgArray[x][y], (0, 0), None, scale, scale)
                 else:
                     imgArray[x][y] = cv2.resize(imgArray[x][y], (imgArray[0][0].shape[1], imgArray[0][0].shape[0]), None, scale, scale)
+                # converts to grayscale image
                 if len(imgArray[x][y].shape) == 2: imgArray[x][y]= cv2.cvtColor( imgArray[x][y], cv2.COLOR_GRAY2BGR)
         imageBlank = np.zeros((height, width, 3), np.uint8)
         hor = [imageBlank]*rows
@@ -48,7 +49,7 @@ def stackImages(scale, imgArray):
 def callback(value):
     pass
 
-
+# GUI window to adjust each filter
 def setup_trackbars(range_filter):
     cv2.namedWindow("Trackbars", 0)
 
@@ -59,6 +60,7 @@ def setup_trackbars(range_filter):
             cv2.createTrackbar("%s_%s" % (j, i), "Trackbars", v, 255, callback)
 
 
+# different arguments and their description to use when running the program from the command line
 def get_arguments():
     ap = argparse.ArgumentParser()
     ap.add_argument('-f', '--filter', required=True,
