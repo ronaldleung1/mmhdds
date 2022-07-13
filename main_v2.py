@@ -48,7 +48,7 @@ def yaw_track(yaw_angle, rate=yaw_rate):
     if yaw_angle < 0:
         yaw_angle = yaw_angle*-1
         direction = 1
-
+    print("Current Yaw: " + vehicle.attitude.yaw)
     # create the CONDITION_YAW command using command_long_encode()
     msg = vehicle.message_factory.command_long_encode(
         0, 0,    # target system, target component
@@ -76,6 +76,7 @@ def move_drone(vx, yaw, yaw_rate):
         0, 0, 0,  # x, y, z acceleration (not supported yet, ignored in GCS_Mavlink)
         yaw, yaw_rate)  # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink)
     # send command to vehicle
+    vehicle.yaw
     vehicle.send_mavlink(msg)
 
 
