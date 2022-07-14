@@ -11,7 +11,7 @@ vx, yaw_rate = .6, 0
 vz = 0.4
 target_alt = 1
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
-delta_target = 0 # .2 meters below the tennis ball
+delta_target = 0 # aim for vertical center on the drone
 delta_tolerance = 5
 ################################################################################################
 

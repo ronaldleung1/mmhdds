@@ -9,6 +9,7 @@ target_alt = 1
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
 delta_target = 0 # .2 meters below the tennis ball
 delta_tolerance = 5
+calibrating = True # start by calibrating so the drone moves to the correct altitude, then run movement sequence
 ################################################################################################
 
 # def arm_drone():
@@ -91,24 +92,29 @@ while True:
     ret, img = cap.read()
     
     if ret:
-        detection, original, rho, phi, beta, delta = process_frame(img, lower, upper)
-        cv2.imshow('Video Stream', original)
-        if detection:
-            if (delta - delta_target) > delta_tolerance: # drone altitude is above target
-                vz_output = vz # positive output is down
-                print(f"Going down {delta - delta_target} pixels")
-            elif (delta_target - delta) > delta_tolerance: # drone altitude is below target
-                vz_output = -1 * vz
-                print(f"Going up {delta_target - delta} pixels")
-            else: # drone altitude is within tolerance
-                vz_output = 0
-                print("At target altitude!")
+        if calibrating: 
+            detection, original, rho, phi, beta, delta = process_frame(img, lower, upper)
+            cv2.imshow('Video Stream', original)
+            if detection:
+                if (delta - delta_target) > delta_tolerance: # drone altitude is above target
+                    vz_output = vz # positive output is down
+                    print(f"Going down {delta - delta_target} pixels")
+                elif (delta_target - delta) > delta_tolerance: # drone altitude is below target
+                    vz_output = -1 * vz
+                    print(f"Going up {delta_target - delta} pixels")
+                else: # drone altitude is within tolerance
+                    vz_output = 0
+                    print("At target altitude!")
+                    calibrating = False # switch to movement sequence
             
-            # move_drone(
-            #     0, # no forward/backward movement
-            #     vz_output,
-            #     0, # no left/right movement
-            #     0)
+                # move_drone(
+                #     0, # no forward/backward movement
+                #     vz_output,
+                #     0, # no left/right movement
+                #     0)
+        else:
+            print("Initiating movement sequence")
+            break
     
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
