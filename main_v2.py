@@ -128,7 +128,7 @@ cap = cv2.VideoCapture(0)
 while True:
     ret, img = cap.read()
     if ret:
-        # ρ - rho (distance from drone to dock), φ - phi, β - beta
+        # ρ - rho (distance from drone to dock - to dock it must be 0.05 m), φ - phi (pitch), β - beta (yaw)
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
         cv2.imshow('Video Stream', original) # display image stream in a window
         if detection and rho>follow_dist: # move the drone closer 
