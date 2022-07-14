@@ -40,6 +40,7 @@ def process_frame(frame, lower, upper):
 #############################################################################################################################
 cap = cv2.VideoCapture(0)
 while True:
+    start = time.perf_counter()
     ret, img = cap.read()
     if ret:
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
@@ -51,7 +52,7 @@ while True:
         #     move_drone(0, beta, 0)
         #     yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
-    
+    print('Time: ', time.perf_counter() - start, 'FPS: ', 1 / (time.perf_counter() - start))
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
