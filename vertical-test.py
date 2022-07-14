@@ -96,10 +96,10 @@ while True:
         if detection:
             if (delta - delta_target) > delta_tolerance: # drone altitude is above target
                 vz_output = vz # positive output is down
-                print(f"Going down {delta - delta_target} m")
+                print(f"Going down {delta - delta_target} pixels")
             elif (delta_target - delta) > delta_tolerance: # drone altitude is below target
                 vz_output = -1 * vz
-                print(f"Going up {delta_target - delta} m")
+                print(f"Going up {delta_target - delta} pixels")
             else: # drone altitude is within tolerance
                 vz_output = 0
                 print("At target altitude!")
