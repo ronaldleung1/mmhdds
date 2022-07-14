@@ -11,7 +11,8 @@ vx, yaw_rate = .6, 0.2
 vz = 0.4
 target_alt = 1
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
-phi_target = 10
+delta_target = 0.2 # .2 meters below the tennis ball
+delta_tolerance = 0.1
 ################################################################################################
 
 
@@ -104,31 +105,11 @@ def process_frame(frame, lower, upper):
         focal_l = 35 * 1000 / 65.5
         rho = 65.5 * focal_l / (box_w*1000)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
+        delta = sy - cy # vertical distance between the center of the camera and the tennis ball
     else:
         detection = False # there isn't detection of the tennis ball or object
         rho, phi, beta = 0, 0, 0
-    return detection, original, rho, phi, beta
-
-
-def findcoords(frame, lower, upper): 
-    original = frame.copy()
-    sx, sy = len(frame[0, :]) // 2, len(frame[:, 2]) // 2 #sx and sy are the coordinates for the center of the image frame
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    frame = cv2.inRange(frame, lower, upper)
-    contours, _ = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    if len(contours) > 0:
-        largest_contour = max(contours, key=cv2.contourArea)
-        area = cv2.contourArea(largest_contour)
-    else:
-        area = 0
-    if area > 200:
-        detection = True # there is detection of the tennis ball or object
-        box_x, box_y, box_w, box_h = cv2.boundingRect(largest_contour)
-        cx, cy = box_x + box_w // 2, box_y + box_h // 2 # cx and cy are coords for the middl of the object
-       
-
-    return sx, sy, cx, cy
-        
+    return detection, original, rho, phi, beta, delta
 
 
 #############################################################################################################################
@@ -151,13 +132,24 @@ while True:
     ret, img = cap.read()
     
     if ret:
-        sx, sy, cx, cy = findcoords(img, lower, upper)
-        detection, original, rho, phi, beta = process_frame(img, lower, upper)
+        detection, original, rho, phi, beta, delta = process_frame(img, lower, upper)
         cv2.imshow('Video Stream', original)
         if detection:
+            if (rho > follow_dist): # drone is too far away
+                vx_output = vx # move drone forward
+            else:
+                vx_output = 0 # stop drone
+            
+            if (delta - delta_target) > delta_tolerance: # drone altitude is above target
+                vz_output = vz # positive output is down
+            elif (delta_target - delta) > delta_tolerance: # drone altitude is below target
+                vz_output = -1 * vz
+            else: # drone altitude is within tolerance
+                vz_output = 0
+            
             move_drone(
-                vx if rho > follow_dist else 0,
-                vz if cx > sx else 0,
+                vx_output,
+                vz_output,
                 beta,
                 0)
             yaw_track(beta, yaw_rate) # yaw rate is set to zero here - might be a problem when trying to track the ball
