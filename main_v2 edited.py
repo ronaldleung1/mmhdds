@@ -7,7 +7,7 @@ from simple_pid import PID
 
 ################################################################################################
 follow_dist = .3
-vx, yaw_rate = .6, 0.2
+vx, yaw_rate = .6, 0
 vz = 0.4
 target_alt = 1
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
