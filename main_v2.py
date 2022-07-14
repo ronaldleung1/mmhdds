@@ -94,7 +94,7 @@ def process_frame(frame, lower, upper):
     if area > 200:
         detection = True
         box_x, box_y, box_w, box_h = cv2.boundingRect(largest_contour)
-        cx, cy = box_x + box_w // 2, box_y + box_h // 2
+        cx, cy = box_x + box_w // 2, box_y + box_h // 2 # center of the bounding box
         cv2.rectangle(original, (box_x, box_y), (box_x + box_w, box_y + box_h), (255, 0, 0), 2)
         cv2.line(original, (sx, sy), (cx, cy), (255, 0, 0), 5)
         cv2.circle(original, (cx, cy), 1, (255, 0, 0), 10)

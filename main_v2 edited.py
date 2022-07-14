@@ -154,12 +154,13 @@ while True:
         sx, sy, cx, cy = findcoords(img, lower, upper)
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
         cv2.imshow('Video Stream', original)
-        if detection and rho >follow_dist and phi > phi_target and cx > sx:
-            move_drone(vx, vz, beta, 0) # is yaw movement not supported 
+        if detection:
+            move_drone(
+                vx if rho > follow_dist else 0,
+                vz if cx > sx else 0,
+                beta,
+                0)
             yaw_track(beta, yaw_rate) # yaw rate is set to zero here - might be a problem when trying to track the ball
-        elif detection and rho<=follow_dist and phi <= phi_target and cx < sx:
-            move_drone(-vx,-vz, beta, 0) # initlaly the x and the new value of y i added were zero , but i set it to negative so the drone could move back??
-            yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
     
     key = cv2.waitKey(1) & 0xFF
