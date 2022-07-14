@@ -71,7 +71,7 @@ def process_frame(frame, lower, upper):
         cv2.rectangle(original, (box_x, box_y), (box_x + box_w, box_y + box_h), (255, 0, 0), 2)
         focal_l = 35 * 1000 / 65.5
         rho = 65.5 * focal_l / (box_w*1000)
-        phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
+        phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi # these angles aren't correct - sy and cy are pixels, not meters
         delta = sy - cy # vertical distance between the center of the camera and the tennis ball
     else:
         detection = False # there isn't detection of the tennis ball or object
