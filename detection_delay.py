@@ -3,8 +3,10 @@ from dronekit import *
 import cv2
 import numpy as np
 from simple_pid import PID
+start = time.perf_counter()
 
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
+program_start = time.perf_counter()
 
 #############################################################################################################################
 def process_frame(frame, lower, upper):
@@ -22,6 +24,7 @@ def process_frame(frame, lower, upper):
         area = 0
     #if area > 200:
     if area > 200:
+        print("Detection: ", time.perf_counter() - start)
         detection = True
         box_x, box_y, box_w, box_h = cv2.boundingRect(largest_contour)
         cx, cy = box_x + box_w // 2, box_y + box_h // 2
@@ -33,7 +36,6 @@ def process_frame(frame, lower, upper):
         focal_l = 35 * 1000 / 65.5
         rho = 65.5 * focal_l / (box_w*1000)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
-        print('Time: ', time.perf_counter() - start, 'FPS: ', 1 / (time.perf_counter() - start))
     else:
         detection = False
         rho, phi, beta = 0, 0, 0
@@ -42,11 +44,13 @@ def process_frame(frame, lower, upper):
 
 
 #############################################################################################################################
+detection = False
 cap = cv2.VideoCapture(0)
 while True:
     ret, img = cap.read()
     if ret:
-        detection, original, rho, phi, beta = process_frame(img, lower, upper)
+        if (detection == False):
+          detection, original, rho, phi, beta = process_frame(img, lower, upper)
         cv2.imshow('Video Stream', original)
         # if detection and rho>follow_dist:
         #     move_drone(vx, beta, 0)
@@ -56,7 +60,7 @@ while True:
         #     yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
     key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
+    if detection == True:
         break
 
 cap.release()
