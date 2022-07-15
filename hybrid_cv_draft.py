@@ -9,9 +9,9 @@ lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
 #############################################################################################################################
 def process_frame(frame, lower, upper):
     start = time.perf_counter()
+    frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)), interpolation=cv2.INTER_AREA)
     original = frame.copy()
     sx, sy = len(frame[0, :]) // 2, len(frame[:, 2]) // 2
-    print("Width: ", len(frame[0, :]), "Height: ", len(frame[:, 2]))
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     frame = cv2.inRange(frame, lower, upper)
     contours, _ = cv2.findContours(frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)

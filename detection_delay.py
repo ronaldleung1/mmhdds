@@ -60,8 +60,6 @@ while True:
         #     yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
     key = cv2.waitKey(1) & 0xFF
-    if detection == True:
-        break
 
 cap.release()
 cv2.destroyAllWindows()
