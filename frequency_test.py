@@ -4,11 +4,12 @@ import cv2
 import numpy as np
 from simple_pid import PID
 
+program_start = time.perf_counter()
 lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
 
 #############################################################################################################################
 def process_frame(frame, lower, upper):
-    start = time.perf_counter()
+    # start = time.perf_counter()
     # frame = cv2.resize(frame, (int(frame.shape[1] * 0.5), int(frame.shape[0] * 0.5)), interpolation=cv2.INTER_AREA)
     original = frame.copy()
     sx, sy = len(frame[0, :]) // 2, len(frame[:, 2]) // 2
@@ -33,7 +34,7 @@ def process_frame(frame, lower, upper):
         focal_l = 35 * 1000 / 65.5
         rho = 65.5 * focal_l / (box_w*1000)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
-        print('Time: ', time.perf_counter() - start, 'FPS: ', 1 / (time.perf_counter() - start))
+        # print('Time: ', time.perf_counter() - start, 'FPS: ', 1 / (time.perf_counter() - start))
     else:
         detection = False
         rho, phi, beta = 0, 0, 0
@@ -43,6 +44,7 @@ def process_frame(frame, lower, upper):
 #############################################################################################################################
 cap = cv2.VideoCapture(0)
 while True:
+    start = time.perf_counter()
     ret, img = cap.read()
     if ret:
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
@@ -54,9 +56,13 @@ while True:
         #     move_drone(0, beta, 0)
         #     yaw_track(beta, yaw_rate)
     # alt_error = vehicle.location.global_relative_frame.alt - target_alt
+
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
+    
+    print(str(time.perf_counter() - program_start) + ", " + str(time.perf_counter() - start) + ", " + str(1/(time.perf_counter() - start)))
+    
 
 cap.release()
 cv2.destroyAllWindows()
