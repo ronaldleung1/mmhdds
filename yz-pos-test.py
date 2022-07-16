@@ -29,8 +29,8 @@ def process_frame(frame, lower, upper):
         cv2.rectangle(original, (box_x, box_y), (box_x + box_w, box_y + box_h), (255, 0, 0), 2)
         focal_l = 35 * 1000 / 65.5
         rho = 65.5 * focal_l / (box_w*1000)
-        gamma = diameter / box_w * (sy - cy) # vertical z-axis distance between the center of the ball and the center of the camera
-        delta = diameter / box_h * (sx - cx) # horizontal y-axis distance between the center of the ball and the center of the camera
+        gamma = diameter / box_h * (sy - cy) # vertical z-axis distance between the center of the ball and the center of the camera
+        delta = diameter / box_w * (sx - cx) # horizontal y-axis distance between the center of the ball and the center of the camera        
         print(delta)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
     else:
