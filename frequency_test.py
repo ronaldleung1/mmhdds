@@ -5,7 +5,7 @@ import numpy as np
 from simple_pid import PID
 
 program_start = time.perf_counter()
-lower, upper = np.array([29, 86, 6]), np.array([64, 255, 255])
+lower, upper = np.array([23, 44, 0]), np.array([52, 103, 245])
 
 #############################################################################################################################
 def process_frame(frame, lower, upper):
@@ -43,10 +43,12 @@ def process_frame(frame, lower, upper):
 
 #############################################################################################################################
 cap = cv2.VideoCapture(0)
-while True:
+frame_count = 0
+while frame_count < 300:
     start = time.perf_counter()
     ret, img = cap.read()
     if ret:
+        frame_count += 1
         detection, original, rho, phi, beta = process_frame(img, lower, upper)
         cv2.imshow('Video Stream', original)
         # if detection and rho>follow_dist:
