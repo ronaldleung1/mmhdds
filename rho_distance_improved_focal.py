@@ -1,12 +1,14 @@
+from pymavlink import mavutil
+from dronekit import *
 import cv2
 import numpy as np
-
-################################################################################################
+from simple_pid import PID
+program_start = time.perf_counter()
 lower, upper = np.array([23, 44, 0]), np.array([52, 103, 245])
-diameter = 0.067 # tennis ball diameter (in meters)
-################################################################################################
 
+#############################################################################################################################
 def process_frame(frame, lower, upper):
+    start = time.perf_counter()
     original = frame.copy()
     sx, sy = len(frame[0, :]) // 2, len(frame[:, 2]) // 2
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -27,24 +29,32 @@ def process_frame(frame, lower, upper):
         cv2.circle(original, (cx, cy), 1, (255, 0, 0), 10)
         cv2.circle(original, (sx, sy), 1, (0, 255, 0), 10)
         cv2.rectangle(original, (box_x, box_y), (box_x + box_w, box_y + box_h), (255, 0, 0), 2)
-        focal_l = 35 * 1000 / 65.5
+        focal_l = 80.75 * 0.8 / 0.067
         rho = 65.5 * focal_l / (box_w*1000)
-        gamma = diameter / box_w * (sy - cy) # vertical z-axis distance between the center of the ball and the center of the camera
-        delta = diameter / box_h * (sx - cx) # horizontal y-axis distance between the center of the ball and the center of the camera
-        print(delta)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
+        print(rho)
+        print(box_w)
+        #current_time = time.perf_counter()
+        # timestamp, processing time, FPS
+        #print(str(current_time - program_start) + ", " + str(current_time - start) + ", " + str(1/(current_time - start)))
+        # print('Time: ', time.perf_counter() - start, 'FPS: ', 1 / (time.perf_counter() - start))
     else:
         detection = False
-        rho, phi, beta, gamma, delta = 0, 0, 0, 0, 0
-    return detection, original, rho, phi, beta, gamma, delta
+        rho, phi, beta = 0, 0, 0
+        
+    return detection, original, rho, phi, beta
 
 
 #############################################################################################################################
 cap = cv2.VideoCapture(0)
-while True:
+frame_count = 0
+while frame_count < 100:
     ret, img = cap.read()
     if ret:
-        detection, original, rho, phi, beta, gamma, delta = process_frame(img, lower, upper)
+        frame_count += 1
+        detection, original, rho, phi, beta = process_frame(img, lower, upper)
+        
+
         cv2.imshow('Video Stream', original)
         # if detection and rho>follow_dist:
         #     move_drone(vx, beta, 0)
@@ -59,3 +69,5 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
+
