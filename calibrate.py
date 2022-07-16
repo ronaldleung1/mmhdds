@@ -9,6 +9,7 @@ import numpy as np
 cap = cv2.VideoCapture(0)
 ret, img = cap.read()
 if ret:
+    img = cv2.resize(img, (int(img.shape[1] * 0.5), int(img.shape[0] * 0.5)), interpolation=cv2.INTER_AREA)
     cv2.imshow('Picture', img)
     cv2.imwrite('test.jpg', img)
 else:
