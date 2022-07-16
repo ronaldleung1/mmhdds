@@ -33,7 +33,7 @@ def process_frame(frame, lower, upper):
         rho = 65.5 * focal_l / (box_w*1000)
         phi, beta = np.arctan((sy - cy) / rho) * 180 / np.pi, np.arctan((sx - cx) / rho) * 180 / np.pi
         print(rho)
-        print(box_w)
+        
         #current_time = time.perf_counter()
         # timestamp, processing time, FPS
         #print(str(current_time - program_start) + ", " + str(current_time - start) + ", " + str(1/(current_time - start)))
