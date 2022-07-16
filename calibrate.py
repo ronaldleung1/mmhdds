@@ -3,8 +3,9 @@ import numpy as np
 
 
 # 11 in = 0.2794 m
-# focal_l = 35 * 1000 / 0.2794 # F = (P x D) / W
-# rho = 65.5 * focal_l / (box_w*1000)
+# focal_l = 11 * 220 / 0.2794 # F = (P x D) / W
+# rho = 0.2794 * focal_l / (box_w*220)
+# tennis ball diameter = 0.067 m
 
 cap = cv2.VideoCapture(0)
 ret, img = cap.read()
